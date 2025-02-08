@@ -48,13 +48,11 @@ void initServer() // 初始化服务器端
 void sendMsgToOthers(char *msg, int clientfd) // 向除了发送端以外的其他人发送
 {
     for (auto itr = names_fd.begin(); itr != names_fd.end(); ++itr)//遍历names_fd
-    {
         if (clientfd != (*itr).second)//如果不是发送端都发送。
         {
             printStrs(1, 4, "send to user: ", GREEN, (*itr).first.c_str(), NORMAL);//服务器端打印发送给谁的记录。
             send((*itr).second, msg, strlen(msg), 0);
         }
-    }
 }
 
 bool checkNameExist(int clientfd) // 判断名字是否重复,重复发送0,不重复发送1
@@ -80,13 +78,11 @@ bool checkNameExist(int clientfd) // 判断名字是否重复,重复发送0,不�
 void deleteUser(int fd) // 删除某个用户
 {
     for (auto it = names_fd.begin(); it != names_fd.end(); it++)
-    {
         if ((*it).second == fd)
         {
             names_fd.erase(it);//遍历到就删。
             return;
         }
-    }
 }
 
 void *service_thread(void *p)
@@ -100,10 +96,23 @@ void *service_thread(void *p)
         char buf[100] = {};
         if (recv(clientfd, buf, sizeof(buf), 0) <= 0)
         {
+            char name[30];
+            for (auto itr = names_fd.begin(); itr != names_fd.end(); ++itr)
+            {
+                if (clientfd == (*itr).second)
+                {
+                    strcpy(name, (*itr).first.c_str());
+                    break;
+                }
+            }
+            char buf2[100] = {};
             // 找到username并删除
             deleteUser(clientfd);
             close(clientfd);
             cout << "fd = " << clientfd << "退出" << endl;
+            //找到对应用户名并发给所有的客户端说这个用户退出了。
+            sprintf(buf2, "%s退出了聊天室", name);
+            sendMsgToOthers(buf2, clientfd);
             pthread_exit(NULL);
         }
         // 把服务器接受到的信息发给所有的客户端

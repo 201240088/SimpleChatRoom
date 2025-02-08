@@ -49,9 +49,7 @@ void initClient() // 初始化客户端，在没有先运行服务器端时报�
     if (recv(serverfd, temp, sizeof(temp), 0))
     {
         if (!strcmp(temp, "客户端启动成功"))
-        {
             printStrs(1, 3, GREEN, temp, NORMAL);
-        }
         else
         {
             printStrs(1, 3, RED, temp, NORMAL);
@@ -66,9 +64,7 @@ void *recv_thread(void *p) // 客户端接收线程
     {
         char buf[100] = {};
         if (recv(serverfd, buf, sizeof(buf), 0) <= 0)
-        {
             return NULL;
-        }
         int pos = string(buf).find(':');//找到冒号的位置
         if (pos != string::npos)
         {
@@ -78,9 +74,7 @@ void *recv_thread(void *p) // 客户端接收线程
             printStrs(2, 3, RED, buf + pos + 1, NORMAL);
         }
         else
-        {
             printStrs(2, 3, BLUE , buf, NORMAL);
-        }
     }
 }
 
@@ -114,23 +108,13 @@ void start()
         fgets(buf, sizeof(buf), stdin);//输入聊天内容
         buf[strcspn(buf, "\n")] = 0; // 去除换行符
         if (strlen(buf) == 0) // 检查输入是否为空
-        {
             continue; // 如果输入为空，则跳过发送消息
-        }
         char msg[131] = {};
         sprintf(msg, "%s:%s", name, buf);
         printSelfMsg(buf);//打印自己的消息
+        send(serverfd, msg, strlen(msg), 0);
         if (strcmp(buf, "bye") == 0)//如果输入bye，则退出聊天室
-        {
-            memset(buf2, 0, sizeof(buf2));
-            sprintf(buf2, "%s退出了聊天室", name);
-            send(serverfd, buf2, strlen(buf2), 0);
             break;
-        }
-        else
-        {
-            send(serverfd, msg, strlen(msg), 0);
-        }
     }
     close(serverfd);
 }
@@ -145,9 +129,7 @@ void getUserName() // 获取用户名,并判断是否重复
         char buf;
         read(serverfd, &buf, 1);//接收服务器端的返回值
         if (buf == 0)
-        {
             printStrs(0, 3, RED, "用户名已存在,请重新输入: ", NORMAL);
-        }
         else
         {
             printStrs(1, 7, GREEN, "欢迎您! ", RED, name, GREEN, " 正在进入聊天室...", NORMAL);
