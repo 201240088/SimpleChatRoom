@@ -77,6 +77,10 @@ void *recv_thread(void *p) // 客户端接收线程
                                                     //              消息
             printStrs(2, 3, RED, buf + pos + 1, NORMAL);
         }
+        else
+        {
+            printStrs(2, 3, BLUE , buf, NORMAL);
+        }
     }
 }
 
@@ -102,7 +106,7 @@ void start()
     pthread_t id;
     pthread_create(&id, NULL, recv_thread, NULL);//创建接收线程
     char buf2[100] = {};
-    sprintf(buf2, "%s:进入了聊天室", name);//格式为：用户名:进入了聊天室
+    sprintf(buf2, "%s进入了聊天室", name);//格式为：用户名:进入了聊天室
     send(serverfd, buf2, strlen(buf2), 0);
     while (1)
     {
@@ -119,7 +123,7 @@ void start()
         if (strcmp(buf, "bye") == 0)//如果输入bye，则退出聊天室
         {
             memset(buf2, 0, sizeof(buf2));
-            sprintf(buf2, "%s:退出了聊天室", name);
+            sprintf(buf2, "%s退出了聊天室", name);
             send(serverfd, buf2, strlen(buf2), 0);
             break;
         }
@@ -133,7 +137,7 @@ void start()
 
 void getUserName() // 获取用户名,并判断是否重复
 {
-    printStrs(0, 1, "请输入您的名字：");
+    printStrs(0, 1, "请输入您的名字(名字中不允许出现:)：");
     while (1)
     {
         scanf("%s", name);//输入客户端用户名。
