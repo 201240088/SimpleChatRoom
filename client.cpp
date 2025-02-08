@@ -82,10 +82,18 @@ void *recv_thread(void *p) // 客户端接收线程
 
 void printSelfMsg(char *buf) // 打印自己的消息,先将光标向上移动一行,然后靠右侧输出
 {
+    // 向上移动一行，并清空该行内容
     upRightPrint(true);
-    printStrs(1, 4, GREEN, name, ":", NORMAL);//输出格式为：自己的用户名:
-                                              //                   消息
+    cout << "\033[2K"; // ANSI 转义码，清除整行
+
+    // 打印用户名及冒号，打印后换行
+    printStrs(1, 4, GREEN, name, ":", NORMAL);
+
+    // 定位到当前行（输入行）并清除整行
     upRightPrint(false);
+    cout << "\033[2K"; // 清除当前行
+
+    // 打印消息内容
     printStrs(2, 3, RED, buf, NORMAL);
 }
 
