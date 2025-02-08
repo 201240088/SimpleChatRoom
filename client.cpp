@@ -99,7 +99,12 @@ void start()
     while (1)
     {
         char buf[100] = {};
-        scanf("%s", buf);//输入聊天内容
+        fgets(buf, sizeof(buf), stdin);//输入聊天内容
+        buf[strcspn(buf, "\n")] = 0; // 去除换行符
+        if (strlen(buf) == 0) // 检查输入是否为空
+        {
+            continue; // 如果输入为空，则跳过发送消息
+        }
         char msg[131] = {};
         sprintf(msg, "%s:%s", name, buf);
         printSelfMsg(buf);//打印自己的消息
