@@ -90,7 +90,7 @@ void *service_thread(void *p)
     int clientfd = *(int *)p;
     cout << "pthread = " << clientfd << endl;
     while (!checkNameExist(clientfd))//服务线程，检查用户名是否重复。
-        ;
+        continue;
     while (1)
     {
         char buf[100] = {};
